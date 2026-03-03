@@ -1,8 +1,23 @@
-import pytesseract
+# ============================================
+# MedSafe AI - OCR Engine (EasyOCR Version)
+# ============================================
+
+import easyocr
+import numpy as np
 from PIL import Image
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+# Initialize reader once
+reader = easyocr.Reader(['en'], gpu=False)
+
 
 def extract_text_from_image(image):
-    text = pytesseract.image_to_string(Image.open(image))
-    return text
+
+    # Convert PIL image to numpy array
+    image_np = np.array(Image.open(image))
+
+    results = reader.readtext(image_np)
+
+    # Combine detected text
+    extracted_text = " ".join([text[1] for text in results])
+
+    return extracted_text

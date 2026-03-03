@@ -1,4 +1,16 @@
-import ollama
+# ============================================
+# MedSafe AI - Symptom Engine (Groq Version)
+# ============================================
+
+from groq import Groq
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+MODEL_NAME = "llama-3.1-8b-instant"
 
 HIGH_RISK_KEYWORDS = [
     "chest pain",
@@ -8,7 +20,9 @@ HIGH_RISK_KEYWORDS = [
     "seizure"
 ]
 
+
 def basic_symptom_risk(symptoms_text):
+
     symptoms_text = symptoms_text.lower()
 
     for keyword in HIGH_RISK_KEYWORDS:
@@ -17,10 +31,10 @@ def basic_symptom_risk(symptoms_text):
 
     return "LOW"
 
-def generate_symptom_guidance(symptoms_text):
-    prompt = f"""
-You are an educational medical assistant.
 
+def generate_symptom_guidance(symptoms_text):
+
+    prompt = f"""
 A user reports the following symptoms:
 {symptoms_text}
 
@@ -33,12 +47,22 @@ Provide:
 Do NOT diagnose.
 Do NOT prescribe medication.
 Encourage seeking medical care if symptoms persist.
-End with: "This information is for educational purposes only."
+
+End with:
+"This information is for educational purposes only."
 """
 
-    response = ollama.chat(
-        model="phi3",
-        messages=[{"role": "user", "content": prompt}]
-    )
+    try:
+        response = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "system", "content": "You are an educational medical assistant."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.3,
+        )
 
-    return response["message"]["content"]
+        return response.choices[0].message.content
+
+    except Exception as e:
+        return f"AI error: {str(e)}"
