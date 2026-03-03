@@ -1,0 +1,43 @@
+{
+  "paracetamol": {
+    "salt": "acetaminophen",
+    "category": "analgesic",
+    "interactions": [
+      {
+        "with": "ibuprofen",
+        "severity": "moderate",
+        "description": "May increase gastrointestinal irritation risk when combined."
+      }
+    ],
+    "common_side_effects": [
+      "nausea",
+      "allergic rash"
+    ]
+  },
+
+  "ibuprofen": {
+    "salt": "ibuprofen",
+    "category": "NSAID",
+    "interactions": [
+      {
+        "with": "paracetamol",
+        "severity": "moderate",
+        "description": "Combined use may increase stomach irritation risk."
+      }
+    ],
+    "common_side_effects": [
+      "stomach pain",
+      "heartburn"
+    ]
+  },
+
+  "amoxicillin": {
+    "salt": "amoxicillin",
+    "category": "antibiotic",
+    "interactions": [],
+    "common_side_effects": [
+      "diarrhea",
+      "skin rash"
+    ]
+  }
+}
