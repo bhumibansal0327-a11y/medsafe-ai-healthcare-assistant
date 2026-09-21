@@ -69,8 +69,58 @@ with tabs[0]:
                 st.success("AI Educational Summary")
                 st.write(summary)
 
-            else:
-                st.success("No known interactions found.")
+           else:
+    if len(detected) == 1:
+        med = detected[0]
+
+        # Load database
+        import json
+
+        with open("database/medicine_db.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        medicine_data = data.get("medicines", data)
+
+        info = medicine_data.get(med, {})
+
+        st.success("No interaction with another medicine was checked.")
+
+        st.divider()
+
+        st.subheader(f"💊 {med.capitalize()}")
+
+        category = info.get("category")
+
+        if category:
+            st.write(f"**Category:** {category}")
+
+        side_effects = info.get("common_side_effects", [])
+
+        if side_effects:
+            st.subheader("Common Side Effects")
+
+            for effect in side_effects:
+                st.markdown(f"- {effect}")
+
+        interactions = info.get("interactions", [])
+
+        if interactions:
+            st.subheader("⚠ Known Interaction Information")
+
+            for interaction in interactions:
+
+                st.markdown(
+                    f"""
+                    **With:** {interaction['with'].capitalize()}  
+                    **Severity:** {interaction['severity'].capitalize()}  
+                    {interaction['description']}
+                    """
+                )
+        else:
+            st.info("No interaction information is currently stored for this medicine.")
+
+    else:
+        st.success("No known interactions found.")
 
 # ==============================
 # TAB 2 - Prescription OCR
