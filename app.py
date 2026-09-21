@@ -323,79 +323,134 @@ with tabs[0]:
 # ==============================
 # TAB 2 - Prescription OCR
 # ==============================
-with tabs[1]:
-    st.header("📄 Prescription OCR")
+# with tabs[1]:
+#     st.header("📄 Prescription OCR")
 
-    image = st.file_uploader("Upload prescription image", type=["png","jpg","jpeg"])
+#     image = st.file_uploader("Upload prescription image", type=["png","jpg","jpeg"])
 
-    if image:
-        st.image(image, caption="Uploaded Prescription", use_column_width=True)
+#     if image:
+#         st.image(image, caption="Uploaded Prescription", use_column_width=True)
 
-        if st.button("Extract Medicines", key="ocr_button"):
+#         if st.button("Extract Medicines", key="ocr_button"):
 
-            raw_text = extract_text_from_image(image)
+#             raw_text = extract_text_from_image(image)
 
-            st.subheader("🔍 Raw Extracted Text")
-            st.text(raw_text)
+#             st.subheader("🔍 Raw Extracted Text")
+#             st.text(raw_text)
 
-            parsed = parse_prescription_text(raw_text)
+#             parsed = parse_prescription_text(raw_text)
 
-            st.subheader("🧠 Structured Medicine Data")
+#             st.subheader("🧠 Structured Medicine Data")
 
-            if "error" in parsed:
-                st.error(parsed["error"])
+#             if "error" in parsed:
+#                 st.error(parsed["error"])
 
-            elif "medicines" in parsed and parsed["medicines"]:
+#             elif "medicines" in parsed and parsed["medicines"]:
 
-                # Show extracted medicines nicely
-                for med in parsed["medicines"]:
-                    name = med.get("name", "Unknown")
-                    salt = med.get("salt", "Not Available")
+#                 # Show extracted medicines nicely
+#                 for med in parsed["medicines"]:
+#                     name = med.get("name", "Unknown")
+#                     salt = med.get("salt", "Not Available")
 
-                    st.success(f"💊 Medicine: {name}")
-                    st.info(f"🧪 Active Salt: {salt}")
-                    st.divider()
+#                     st.success(f"💊 Medicine: {name}")
+#                     st.info(f"🧪 Active Salt: {salt}")
+#                     st.divider()
 
-                # Validate medicines
-                extracted_names = [
-                    m["name"].lower()
-                    for m in parsed["medicines"]
-                    if "name" in m
-                ]
+#                 # Validate medicines
+#                 extracted_names = [
+#                     m["name"].lower()
+#                     for m in parsed["medicines"]
+#                     if "name" in m
+#                 ]
 
-                detected = identify_medicines(",".join(extracted_names))
+#                 detected = identify_medicines(",".join(extracted_names))
 
-                if detected:
-                    st.success(f"Validated Medicines: {', '.join(detected)}")
+#                 if detected:
+#                     st.success(f"Validated Medicines: {', '.join(detected)}")
 
-                    warnings = check_interactions(detected)
+#                     warnings = check_interactions(detected)
 
-                    if warnings:
-                        st.error("⚠ Interaction Detected From Prescription!")
+#                     if warnings:
+#                         st.error("⚠ Interaction Detected From Prescription!")
 
-                        for w in warnings:
-                            st.markdown(f"""
-                            **{w['medicine_1'].capitalize()}** + 
-                            **{w['medicine_2'].capitalize()}**
+#                         for w in warnings:
+#                             st.markdown(f"""
+#                             **{w['medicine_1'].capitalize()}** + 
+#                             **{w['medicine_2'].capitalize()}**
 
-                            Severity: {w['severity'].capitalize()}  
-                            {w['description']}
-                            """)
+#                             Severity: {w['severity'].capitalize()}  
+#                             {w['description']}
+#                             """)
 
-                        st.divider()
-                        summary = generate_interaction_summary(warnings)
+#                         st.divider()
+#                         summary = generate_interaction_summary(warnings)
 
-                        st.success("AI Educational Summary")
-                        st.write(summary)
+#                         st.success("AI Educational Summary")
+#                         st.write(summary)
 
-                    else:
-                        st.success("No known interactions found.")
+#                     else:
+#                         st.success("No known interactions found.")
 
-                else:
-                    st.warning("No valid medicines identified after validation.")
+#                 else:
+#                     st.warning("No valid medicines identified after validation.")
 
-            else:
-                st.warning("No medicines found in prescription.")
+#             else:
+#                 st.warning("No medicines found in prescription.")
+
+ # ============================================
+# MedSafe AI - OCR Engine (EasyOCR)
+# ============================================
+
+import easyocr
+import numpy as np
+from PIL import Image
+
+
+# Initialize reader once
+reader = easyocr.Reader(
+    ["en"],
+    gpu=False
+)
+
+
+def extract_text_from_image(image):
+
+    try:
+
+        # Make sure the uploaded file is at the beginning
+        image.seek(0)
+
+        # Open image
+        pil_image = Image.open(image).convert("RGB")
+
+        # Convert PIL → NumPy
+        image_np = np.array(pil_image)
+
+        # Run OCR
+        results = reader.readtext(
+            image_np,
+            detail=1,
+            paragraph=False
+        )
+
+        # Extract detected text
+        extracted_text = []
+
+        for result in results:
+
+            if len(result) >= 2:
+
+                text = result[1].strip()
+
+                if text:
+                    extracted_text.append(text)
+
+        return " ".join(extracted_text)
+
+    except Exception as e:
+
+        return f"OCR Error: {str(e)}"
+
 # ==============================
 # TAB 3 - Symptom Solver
 # ==============================
