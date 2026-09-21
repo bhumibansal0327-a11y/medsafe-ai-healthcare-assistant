@@ -34,93 +34,291 @@ tabs = st.tabs([
 # ==============================
 # TAB 1 - Interaction Checker
 # ==============================
+# with tabs[0]:
+#     st.header("💊 Medicine Interaction Checker")
+
+#     medicines = st.text_input("Enter medicines (comma separated)")
+
+#     if st.button("Check Interactions"):
+#         detected = identify_medicines(medicines)
+
+#         if not detected:
+#             st.warning("No valid medicines detected.")
+#         else:
+#             st.success(f"Detected Medicines: {', '.join(detected)}")
+
+#             warnings = check_interactions(detected)
+
+#             if warnings:
+#                 st.error("⚠ Interaction Detected!")
+
+#                 for w in warnings:
+#                     st.markdown(f"""
+#                     **{w['medicine_1'].capitalize()}** + 
+#                     **{w['medicine_2'].capitalize()}**
+
+#                     Severity: {w['severity'].capitalize()}  
+#                     {w['description']}
+#                     """)
+
+#                 st.divider()
+#                 st.info("🤖 Generating AI Safety Summary...")
+
+#                 summary = generate_interaction_summary(warnings)
+
+#                 st.success("AI Educational Summary")
+#                 st.write(summary)
+
+#            else:
+#     if len(detected) == 1:
+#         med = detected[0]
+
+#         # Load database
+#         import json
+
+#         with open("database/medicine_db.json", "r", encoding="utf-8") as f:
+#             data = json.load(f)
+
+#         medicine_data = data.get("medicines", data)
+
+#         info = medicine_data.get(med, {})
+
+#         st.success("No interaction with another medicine was checked.")
+
+#         st.divider()
+
+#         st.subheader(f"💊 {med.capitalize()}")
+
+#         category = info.get("category")
+
+#         if category:
+#             st.write(f"**Category:** {category}")
+
+#         side_effects = info.get("common_side_effects", [])
+
+#         if side_effects:
+#             st.subheader("Common Side Effects")
+
+#             for effect in side_effects:
+#                 st.markdown(f"- {effect}")
+
+#         interactions = info.get("interactions", [])
+
+#         if interactions:
+#             st.subheader("⚠ Known Interaction Information")
+
+#             for interaction in interactions:
+
+#                 st.markdown(
+#                     f"""
+#                     **With:** {interaction['with'].capitalize()}  
+#                     **Severity:** {interaction['severity'].capitalize()}  
+#                     {interaction['description']}
+#                     """
+#                 )
+#         else:
+#             st.info("No interaction information is currently stored for this medicine.")
+
+#     else:
+#         st.success("No known interactions found.")
+
+# ==============================
+# TAB 1 - Interaction Checker
+# ==============================
 with tabs[0]:
     st.header("💊 Medicine Interaction Checker")
 
-    medicines = st.text_input("Enter medicines (comma separated)")
+    medicines = st.text_input(
+        "Enter medicines (comma separated)",
+        placeholder="Example: paracetamol, ibuprofen"
+    )
 
     if st.button("Check Interactions"):
-        detected = identify_medicines(medicines)
 
-        if not detected:
-            st.warning("No valid medicines detected.")
+        if not medicines.strip():
+            st.warning("Please enter at least one medicine.")
+
         else:
-            st.success(f"Detected Medicines: {', '.join(detected)}")
+            detected = identify_medicines(medicines)
 
-            warnings = check_interactions(detected)
+            if not detected:
+                st.warning("No valid medicines detected.")
 
-            if warnings:
-                st.error("⚠ Interaction Detected!")
-
-                for w in warnings:
-                    st.markdown(f"""
-                    **{w['medicine_1'].capitalize()}** + 
-                    **{w['medicine_2'].capitalize()}**
-
-                    Severity: {w['severity'].capitalize()}  
-                    {w['description']}
-                    """)
-
-                st.divider()
-                st.info("🤖 Generating AI Safety Summary...")
-
-                summary = generate_interaction_summary(warnings)
-
-                st.success("AI Educational Summary")
-                st.write(summary)
-
-           else:
-    if len(detected) == 1:
-        med = detected[0]
-
-        # Load database
-        import json
-
-        with open("database/medicine_db.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        medicine_data = data.get("medicines", data)
-
-        info = medicine_data.get(med, {})
-
-        st.success("No interaction with another medicine was checked.")
-
-        st.divider()
-
-        st.subheader(f"💊 {med.capitalize()}")
-
-        category = info.get("category")
-
-        if category:
-            st.write(f"**Category:** {category}")
-
-        side_effects = info.get("common_side_effects", [])
-
-        if side_effects:
-            st.subheader("Common Side Effects")
-
-            for effect in side_effects:
-                st.markdown(f"- {effect}")
-
-        interactions = info.get("interactions", [])
-
-        if interactions:
-            st.subheader("⚠ Known Interaction Information")
-
-            for interaction in interactions:
-
-                st.markdown(
-                    f"""
-                    **With:** {interaction['with'].capitalize()}  
-                    **Severity:** {interaction['severity'].capitalize()}  
-                    {interaction['description']}
-                    """
+            else:
+                st.success(
+                    f"Detected Medicines: {', '.join(detected)}"
                 )
-        else:
-            st.info("No interaction information is currently stored for this medicine.")
 
-    else:
-        st.success("No known interactions found.")
+                # ==================================
+                # CASE 1: Multiple Medicines
+                # ==================================
+
+                if len(detected) > 1:
+
+                    warnings = check_interactions(detected)
+
+                    if warnings:
+
+                        st.error("⚠ Interaction Detected!")
+
+                        for w in warnings:
+
+                            st.markdown(
+                                f"""
+                                **{w['medicine_1'].capitalize()}** +
+                                **{w['medicine_2'].capitalize()}**
+
+                                **Severity:** {w['severity'].capitalize()}
+
+                                {w['description']}
+                                """
+                            )
+
+                        st.divider()
+
+                        st.info(
+                            "🤖 Generating AI Safety Summary..."
+                        )
+
+                        summary = generate_interaction_summary(
+                            warnings
+                        )
+
+                        st.success("AI Educational Summary")
+                        st.write(summary)
+
+                    else:
+
+                        st.success(
+                            "No known interactions found between "
+                            "the detected medicines."
+                        )
+
+                # ==================================
+                # CASE 2: Single Medicine
+                # ==================================
+
+                else:
+
+                    med = detected[0]
+
+                    # Load database
+                    import json
+
+                    with open(
+                        "database/medicine_db.json",
+                        "r",
+                        encoding="utf-8"
+                    ) as f:
+                        data = json.load(f)
+
+                    medicine_data = data.get(
+                        "medicines",
+                        data
+                    )
+
+                    info = medicine_data.get(
+                        med,
+                        {}
+                    )
+
+                    st.info(
+                        "ℹ️ Only one medicine was entered, "
+                        "so an interaction between medicines "
+                        "cannot be checked."
+                    )
+
+                    st.divider()
+
+                    # ==================================
+                    # Medicine Information
+                    # ==================================
+
+                    st.subheader(
+                        f"💊 {med.capitalize()}"
+                    )
+
+                    category = info.get(
+                        "category"
+                    )
+
+                    if category:
+
+                        st.write(
+                            f"**Category:** {category.replace('_', ' ').title()}"
+                        )
+
+                    # ==================================
+                    # Common Side Effects
+                    # ==================================
+
+                    side_effects = info.get(
+                        "common_side_effects",
+                        []
+                    )
+
+                    if side_effects:
+
+                        st.subheader(
+                            "⚠ Common Side Effects"
+                        )
+
+                        for effect in side_effects:
+
+                            st.markdown(
+                                f"- {effect.capitalize()}"
+                            )
+
+                    # ==================================
+                    # Known Interactions
+                    # ==================================
+
+                    interactions = info.get(
+                        "interactions",
+                        []
+                    )
+
+                    if interactions:
+
+                        st.subheader(
+                            "🔗 Known Interaction Information"
+                        )
+
+                        for interaction in interactions:
+
+                            other_med = interaction.get(
+                                "with",
+                                "Unknown"
+                            )
+
+                            severity = interaction.get(
+                                "severity",
+                                "Unknown"
+                            )
+
+                            description = interaction.get(
+                                "description",
+                                ""
+                            )
+
+                            st.markdown(
+                                f"""
+                                **With:** {other_med.replace('_', ' ').capitalize()}
+
+                                **Severity:** {severity.capitalize()}
+
+                                {description}
+
+                                ---
+                                """
+                            )
+
+                    else:
+
+                        st.info(
+                            "No interaction information is currently "
+                            "stored for this medicine."
+                        )
 
 # ==============================
 # TAB 2 - Prescription OCR
