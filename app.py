@@ -397,59 +397,220 @@ with tabs[0]:
 #             else:
 #                 st.warning("No medicines found in prescription.")
 
- # ============================================
-# MedSafe AI - OCR Engine (EasyOCR)
-# ============================================
+ # ==============================
+# TAB 2 - Prescription OCR
+# ==============================
+with tabs[1]:
+    st.header("📄 Prescription OCR")
 
-import easyocr
-import numpy as np
-from PIL import Image
+    st.write(
+        "Upload a prescription image and MedSafe AI "
+        "will extract and validate the medicines."
+    )
 
+    image = st.file_uploader(
+        "Upload prescription image",
+        type=["png", "jpg", "jpeg"],
+        key="prescription_upload"
+    )
 
-# Initialize reader once
-reader = easyocr.Reader(
-    ["en"],
-    gpu=False
-)
+    if image is not None:
 
-
-def extract_text_from_image(image):
-
-    try:
-
-        # Make sure the uploaded file is at the beginning
-        image.seek(0)
-
-        # Open image
-        pil_image = Image.open(image).convert("RGB")
-
-        # Convert PIL → NumPy
-        image_np = np.array(pil_image)
-
-        # Run OCR
-        results = reader.readtext(
-            image_np,
-            detail=1,
-            paragraph=False
+        # Display uploaded image
+        st.image(
+            image,
+            caption="Uploaded Prescription",
+            use_container_width=True
         )
 
-        # Extract detected text
-        extracted_text = []
+        st.divider()
 
-        for result in results:
+        if st.button(
+            "🔍 Extract Medicines",
+            key="ocr_button"
+        ):
 
-            if len(result) >= 2:
+            with st.spinner("🔍 Reading prescription..."):
 
-                text = result[1].strip()
+                raw_text = extract_text_from_image(image)
 
-                if text:
-                    extracted_text.append(text)
+            # ==================================
+            # RAW OCR TEXT
+            # ==================================
 
-        return " ".join(extracted_text)
+            st.subheader("🔍 Raw Extracted Text")
 
-    except Exception as e:
+            if raw_text.startswith("OCR Error:"):
 
-        return f"OCR Error: {str(e)}"
+                st.error(raw_text)
+
+            elif raw_text.strip():
+
+                st.text_area(
+                    "Detected Text",
+                    raw_text,
+                    height=150
+                )
+
+            else:
+
+                st.warning(
+                    "No text could be detected from this image."
+                )
+
+            # ==================================
+            # PARSE PRESCRIPTION
+            # ==================================
+
+            if raw_text.strip() and not raw_text.startswith("OCR Error:"):
+
+                with st.spinner(
+                    "🧠 Identifying medicines..."
+                ):
+
+                    parsed = parse_prescription_text(
+                        raw_text
+                    )
+
+                st.subheader(
+                    "🧠 Structured Medicine Data"
+                )
+
+                if "error" in parsed:
+
+                    st.error(
+                        parsed["error"]
+                    )
+
+                elif (
+                    "medicines" in parsed
+                    and parsed["medicines"]
+                ):
+
+                    # ==================================
+                    # DISPLAY MEDICINES
+                    # ==================================
+
+                    for med in parsed["medicines"]:
+
+                        name = med.get(
+                            "name",
+                            "Unknown"
+                        )
+
+                        salt = med.get(
+                            "salt",
+                            "Not Available"
+                        )
+
+                        st.success(
+                            f"💊 Medicine: {name}"
+                        )
+
+                        st.info(
+                            f"🧪 Active Salt: {salt}"
+                        )
+
+                        st.divider()
+
+                    # ==================================
+                    # VALIDATE MEDICINES
+                    # ==================================
+
+                    extracted_names = [
+                        str(m.get("name", ""))
+                        for m in parsed["medicines"]
+                        if m.get("name")
+                    ]
+
+                    detected = identify_medicines(
+                        ",".join(extracted_names)
+                    )
+
+                    if detected:
+
+                        st.success(
+                            "✅ Validated Medicines: "
+                            + ", ".join(detected)
+                        )
+
+                        # ==================================
+                        # INTERACTION CHECK
+                        # ==================================
+
+                        if len(detected) > 1:
+
+                            warnings = check_interactions(
+                                detected
+                            )
+
+                            if warnings:
+
+                                st.error(
+                                    "⚠ Interaction Detected "
+                                    "From Prescription!"
+                                )
+
+                                for w in warnings:
+
+                                    st.markdown(
+                                        f"""
+                                        **{w['medicine_1'].capitalize()}**
+                                        +
+                                        **{w['medicine_2'].capitalize()}**
+
+                                        **Severity:**
+                                        {w['severity'].capitalize()}
+
+                                        {w['description']}
+                                        """
+                                    )
+
+                                st.divider()
+
+                                with st.spinner(
+                                    "🤖 Generating AI Safety Summary..."
+                                ):
+
+                                    summary = (
+                                        generate_interaction_summary(
+                                            warnings
+                                        )
+                                    )
+
+                                st.success(
+                                    "AI Educational Summary"
+                                )
+
+                                st.write(summary)
+
+                            else:
+
+                                st.success(
+                                    "✅ No known interactions found "
+                                    "between the detected medicines."
+                                )
+
+                        else:
+
+                            st.info(
+                                "ℹ️ Only one medicine was detected. "
+                                "No medicine-to-medicine interaction "
+                                "can be checked."
+                            )
+
+                    else:
+
+                        st.warning(
+                            "⚠ No valid medicines identified "
+                            "after validation."
+                        )
+
+                else:
+
+                    st.warning(
+                        "No medicines found in the prescription."
+                    )
 
 # ==============================
 # TAB 3 - Symptom Solver
