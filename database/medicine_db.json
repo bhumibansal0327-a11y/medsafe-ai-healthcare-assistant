@@ -1,17 +1,22 @@
 {
   "paracetamol": {
-    "salt": "acetaminophen",
-    "category": "analgesic",
+    "salt": "paracetamol",
+    "category": "analgesic_antipyretic",
     "interactions": [
       {
         "with": "ibuprofen",
-        "severity": "moderate",
-        "description": "May increase gastrointestinal irritation risk when combined."
+        "severity": "caution",
+        "description": "These medicines may sometimes be used together, but suitability depends on the person's health conditions and other medicines."
+      },
+      {
+        "with": "warfarin",
+        "severity": "caution",
+        "description": "Regular or prolonged use may affect anticoagulation in some people."
       }
     ],
     "common_side_effects": [
       "nausea",
-      "allergic rash"
+      "skin rash"
     ]
   },
 
@@ -21,23 +26,550 @@
     "interactions": [
       {
         "with": "paracetamol",
-        "severity": "moderate",
-        "description": "Combined use may increase stomach irritation risk."
+        "severity": "caution",
+        "description": "These medicines may sometimes be used together, but suitability depends on the person's health conditions and other medicines."
+      },
+      {
+        "with": "warfarin",
+        "severity": "high",
+        "description": "Ibuprofen can increase bleeding risk when combined with anticoagulants such as warfarin."
+      },
+      {
+        "with": "aspirin",
+        "severity": "high",
+        "description": "Combining NSAIDs can increase gastrointestinal and other adverse-effect risks."
+      },
+      {
+        "with": "diclofenac",
+        "severity": "high",
+        "description": "Combining multiple NSAIDs can increase the risk of stomach, kidney and other adverse effects."
       }
     ],
     "common_side_effects": [
       "stomach pain",
-      "heartburn"
+      "heartburn",
+      "nausea",
+      "indigestion"
     ]
   },
 
   "amoxicillin": {
     "salt": "amoxicillin",
     "category": "antibiotic",
-    "interactions": [],
+    "interactions": [
+      {
+        "with": "warfarin",
+        "severity": "caution",
+        "description": "May affect anticoagulation in some people and may require professional monitoring."
+      },
+      {
+        "with": "methotrexate",
+        "severity": "important",
+        "description": "Potential interaction exists and requires professional medical assessment."
+      }
+    ],
     "common_side_effects": [
       "diarrhea",
+      "nausea",
+      "skin rash",
+      "stomach discomfort"
+    ]
+  },
+
+  "azithromycin": {
+    "salt": "azithromycin",
+    "category": "antibiotic_macrolide",
+    "interactions": [
+      {
+        "with": "warfarin",
+        "severity": "caution",
+        "description": "May affect anticoagulation in some people and may require professional monitoring."
+      },
+      {
+        "with": "qt_prolonging_medicines",
+        "severity": "important",
+        "description": "May increase the risk of abnormal heart rhythms in susceptible individuals."
+      }
+    ],
+    "common_side_effects": [
+      "nausea",
+      "diarrhea",
+      "abdominal discomfort"
+    ]
+  },
+
+  "cetirizine": {
+    "salt": "cetirizine",
+    "category": "antihistamine",
+    "interactions": [
+      {
+        "with": "alcohol",
+        "severity": "caution",
+        "description": "Alcohol may increase drowsiness or impairment."
+      },
+      {
+        "with": "sedating_medicines",
+        "severity": "caution",
+        "description": "Other medicines that cause drowsiness may increase this effect."
+      }
+    ],
+    "common_side_effects": [
+      "drowsiness",
+      "dry mouth",
+      "fatigue",
+      "headache"
+    ]
+  },
+
+  "levocetirizine": {
+    "salt": "levocetirizine",
+    "category": "antihistamine",
+    "interactions": [
+      {
+        "with": "alcohol",
+        "severity": "caution",
+        "description": "Alcohol may increase drowsiness."
+      },
+      {
+        "with": "sedating_medicines",
+        "severity": "caution",
+        "description": "Other sedating medicines may increase drowsiness."
+      }
+    ],
+    "common_side_effects": [
+      "drowsiness",
+      "fatigue",
+      "dry mouth",
+      "headache"
+    ]
+  },
+
+  "omeprazole": {
+    "salt": "omeprazole",
+    "category": "proton_pump_inhibitor",
+    "interactions": [
+      {
+        "with": "clopidogrel",
+        "severity": "important",
+        "description": "Omeprazole can affect activation of clopidogrel and the combination should be assessed by a healthcare professional."
+      },
+      {
+        "with": "warfarin",
+        "severity": "caution",
+        "description": "May require professional monitoring in some patients."
+      }
+    ],
+    "common_side_effects": [
+      "headache",
+      "nausea",
+      "abdominal discomfort",
+      "diarrhea"
+    ]
+  },
+
+  "pantoprazole": {
+    "salt": "pantoprazole",
+    "category": "proton_pump_inhibitor",
+    "interactions": [
+      {
+        "with": "warfarin",
+        "severity": "caution",
+        "description": "May require professional monitoring in some patients."
+      }
+    ],
+    "common_side_effects": [
+      "headache",
+      "nausea",
+      "diarrhea",
+      "abdominal discomfort"
+    ]
+  },
+
+  "diclofenac": {
+    "salt": "diclofenac",
+    "category": "NSAID",
+    "interactions": [
+      {
+        "with": "ibuprofen",
+        "severity": "high",
+        "description": "Both are NSAIDs. Combining them can increase the risk of gastrointestinal, kidney and other adverse effects."
+      },
+      {
+        "with": "aspirin",
+        "severity": "high",
+        "description": "Concurrent use can increase gastrointestinal and bleeding risks."
+      },
+      {
+        "with": "warfarin",
+        "severity": "high",
+        "description": "NSAIDs can substantially increase bleeding risk when combined with anticoagulants."
+      }
+    ],
+    "common_side_effects": [
+      "stomach pain",
+      "indigestion",
+      "nausea",
+      "heartburn"
+    ]
+  },
+
+  "aspirin": {
+    "salt": "acetylsalicylic_acid",
+    "category": "NSAID_antiplatelet",
+    "interactions": [
+      {
+        "with": "ibuprofen",
+        "severity": "high",
+        "description": "Concurrent use may increase adverse-effect risk and can interfere with aspirin's antiplatelet effect in some circumstances."
+      },
+      {
+        "with": "warfarin",
+        "severity": "high",
+        "description": "Combined use can increase bleeding risk."
+      },
+      {
+        "with": "diclofenac",
+        "severity": "high",
+        "description": "Combining NSAIDs can increase gastrointestinal and other adverse-effect risks."
+      }
+    ],
+    "common_side_effects": [
+      "stomach irritation",
+      "indigestion",
+      "easy bruising",
+      "nausea"
+    ]
+  },
+
+  "metformin": {
+    "salt": "metformin",
+    "category": "antidiabetic",
+    "interactions": [
+      {
+        "with": "alcohol",
+        "severity": "caution",
+        "description": "Excessive alcohol intake may increase certain risks associated with metformin."
+      },
+      {
+        "with": "contrast_media",
+        "severity": "important",
+        "description": "Certain contrast procedures may require temporary medication management depending on kidney function and clinical circumstances."
+      }
+    ],
+    "common_side_effects": [
+      "nausea",
+      "diarrhea",
+      "abdominal discomfort",
+      "reduced appetite"
+    ]
+  },
+
+  "amlodipine": {
+    "salt": "amlodipine",
+    "category": "calcium_channel_blocker",
+    "interactions": [
+      {
+        "with": "other_blood_pressure_medicines",
+        "severity": "caution",
+        "description": "Combined treatment may lower blood pressure more than intended and may require monitoring."
+      }
+    ],
+    "common_side_effects": [
+      "ankle swelling",
+      "headache",
+      "flushing",
+      "dizziness"
+    ]
+  },
+
+  "losartan": {
+    "salt": "losartan_potassium",
+    "category": "ARB",
+    "interactions": [
+      {
+        "with": "potassium_supplements",
+        "severity": "important",
+        "description": "May increase potassium levels in the blood."
+      },
+      {
+        "with": "potassium_sparing_diuretics",
+        "severity": "important",
+        "description": "May increase the risk of high potassium levels."
+      },
+      {
+        "with": "NSAIDs",
+        "severity": "caution",
+        "description": "NSAIDs may affect kidney function and blood-pressure control in some people."
+      }
+    ],
+    "common_side_effects": [
+      "dizziness",
+      "fatigue"
+    ]
+  },
+
+  "montelukast": {
+    "salt": "montelukast",
+    "category": "leukotriene_receptor_antagonist",
+    "interactions": [],
+    "common_side_effects": [
+      "headache",
+      "abdominal discomfort"
+    ]
+  },
+
+  "salbutamol": {
+    "salt": "salbutamol",
+    "category": "bronchodilator",
+    "interactions": [
+      {
+        "with": "beta_blockers",
+        "severity": "important",
+        "description": "Beta-blockers may reduce the effect of salbutamol and can worsen bronchospasm in susceptible individuals."
+      }
+    ],
+    "common_side_effects": [
+      "tremor",
+      "fast heartbeat",
+      "headache",
+      "nervousness"
+    ]
+  },
+
+  "ondansetron": {
+    "salt": "ondansetron",
+    "category": "antiemetic",
+    "interactions": [
+      {
+        "with": "qt_prolonging_medicines",
+        "severity": "important",
+        "description": "May increase the risk of abnormal heart rhythms."
+      }
+    ],
+    "common_side_effects": [
+      "headache",
+      "constipation",
+      "dizziness"
+    ]
+  },
+
+  "loratadine": {
+    "salt": "loratadine",
+    "category": "antihistamine",
+    "interactions": [
+      {
+        "with": "sedating_medicines",
+        "severity": "caution",
+        "description": "Some medicines may increase drowsiness or impairment."
+      }
+    ],
+    "common_side_effects": [
+      "headache",
+      "drowsiness",
+      "dry mouth",
+      "fatigue"
+    ]
+  },
+
+  "famotidine": {
+    "salt": "famotidine",
+    "category": "H2_receptor_blocker",
+    "interactions": [
+      {
+        "with": "certain_medicines_requiring_acidic_absorption",
+        "severity": "caution",
+        "description": "Reducing stomach acid can affect absorption of some medicines."
+      }
+    ],
+    "common_side_effects": [
+      "headache",
+      "dizziness",
+      "constipation",
+      "diarrhea"
+    ]
+  },
+
+  "domperidone": {
+    "salt": "domperidone",
+    "category": "antiemetic",
+    "interactions": [
+      {
+        "with": "qt_prolonging_medicines",
+        "severity": "high",
+        "description": "May increase the risk of serious abnormal heart rhythms."
+      },
+      {
+        "with": "strong_cyp3a4_inhibitors",
+        "severity": "high",
+        "description": "May increase domperidone exposure and the risk of cardiac adverse effects."
+      }
+    ],
+    "common_side_effects": [
+      "dry mouth",
+      "headache",
+      "abdominal discomfort"
+    ]
+  },
+
+  "prednisolone": {
+    "salt": "prednisolone",
+    "category": "corticosteroid",
+    "interactions": [
+      {
+        "with": "NSAIDs",
+        "severity": "important",
+        "description": "Combined use may increase the risk of gastrointestinal irritation and bleeding."
+      },
+      {
+        "with": "diabetes_medicines",
+        "severity": "caution",
+        "description": "Corticosteroids can increase blood glucose and may affect diabetes control."
+      }
+    ],
+    "common_side_effects": [
+      "increased appetite",
+      "indigestion",
+      "difficulty sleeping",
+      "mood changes"
+    ]
+  },
+
+  "hydroxychloroquine": {
+    "salt": "hydroxychloroquine",
+    "category": "antimalarial_immunomodulator",
+    "interactions": [
+      {
+        "with": "qt_prolonging_medicines",
+        "severity": "high",
+        "description": "May increase the risk of abnormal heart rhythms."
+      },
+      {
+        "with": "certain_antidiabetic_medicines",
+        "severity": "caution",
+        "description": "May affect blood glucose levels and require monitoring."
+      }
+    ],
+    "common_side_effects": [
+      "nausea",
+      "abdominal discomfort",
+      "headache",
       "skin rash"
+    ]
+  },
+
+  "doxycycline": {
+    "salt": "doxycycline",
+    "category": "antibiotic_tetracycline",
+    "interactions": [
+      {
+        "with": "antacids",
+        "severity": "important",
+        "description": "Some antacids containing minerals can reduce doxycycline absorption."
+      },
+      {
+        "with": "iron_supplements",
+        "severity": "important",
+        "description": "Iron can reduce doxycycline absorption."
+      }
+    ],
+    "common_side_effects": [
+      "nausea",
+      "diarrhea",
+      "stomach discomfort",
+      "sun sensitivity"
+    ]
+  },
+
+  "ciprofloxacin": {
+    "salt": "ciprofloxacin",
+    "category": "antibiotic_fluoroquinolone",
+    "interactions": [
+      {
+        "with": "antacids",
+        "severity": "important",
+        "description": "Some antacids can reduce ciprofloxacin absorption."
+      },
+      {
+        "with": "iron_supplements",
+        "severity": "important",
+        "description": "Iron can reduce ciprofloxacin absorption."
+      },
+      {
+        "with": "warfarin",
+        "severity": "caution",
+        "description": "May affect anticoagulation in some patients."
+      }
+    ],
+    "common_side_effects": [
+      "nausea",
+      "diarrhea",
+      "abdominal discomfort",
+      "headache"
+    ]
+  },
+
+  "clopidogrel": {
+    "salt": "clopidogrel",
+    "category": "antiplatelet",
+    "interactions": [
+      {
+        "with": "omeprazole",
+        "severity": "important",
+        "description": "Omeprazole can reduce activation of clopidogrel and the combination should be reviewed by a healthcare professional."
+      },
+      {
+        "with": "warfarin",
+        "severity": "high",
+        "description": "Combining antiplatelet and anticoagulant medicines can substantially increase bleeding risk."
+      },
+      {
+        "with": "NSAIDs",
+        "severity": "high",
+        "description": "NSAIDs can increase bleeding risk when combined with antiplatelet medicines."
+      }
+    ],
+    "common_side_effects": [
+      "easy bruising",
+      "nosebleed",
+      "stomach discomfort",
+      "bleeding"
+    ]
+  },
+
+  "warfarin": {
+    "salt": "warfarin",
+    "category": "anticoagulant",
+    "interactions": [
+      {
+        "with": "ibuprofen",
+        "severity": "high",
+        "description": "Can significantly increase bleeding risk."
+      },
+      {
+        "with": "aspirin",
+        "severity": "high",
+        "description": "Can significantly increase bleeding risk."
+      },
+      {
+        "with": "diclofenac",
+        "severity": "high",
+        "description": "NSAIDs can increase bleeding risk when combined with warfarin."
+      },
+      {
+        "with": "clopidogrel",
+        "severity": "high",
+        "description": "Combining anticoagulant and antiplatelet therapy can substantially increase bleeding risk."
+      },
+      {
+        "with": "amoxicillin",
+        "severity": "caution",
+        "description": "Some antibiotics may affect anticoagulation and monitoring may be required."
+      }
+    ],
+    "common_side_effects": [
+      "easy bruising",
+      "nosebleed",
+      "bleeding"
     ]
   }
 }
