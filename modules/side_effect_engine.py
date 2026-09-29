@@ -121,7 +121,7 @@
 #         return f"AI error: {str(e)}"
 
 
-```python
+
 # ============================================
 # MedSafe AI - Side Effect Engine
 # ============================================
@@ -600,4 +600,4 @@ End with:
     except Exception as e:
 
         return f"AI error: {str(e)}"
-```
+
