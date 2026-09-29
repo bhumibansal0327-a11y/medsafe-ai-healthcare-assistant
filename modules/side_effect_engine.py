@@ -121,11 +121,6 @@
 #         return f"AI error: {str(e)}"
 
 
-
-# ============================================
-# MedSafe AI - Side Effect Engine
-# ============================================
-
 import json
 import os
 import re
@@ -133,10 +128,6 @@ import re
 from groq import Groq
 from dotenv import load_dotenv
 
-
-# ============================================
-# ENVIRONMENT
-# ============================================
 
 load_dotenv()
 
@@ -148,10 +139,6 @@ MODEL_NAME = "openai/gpt-oss-20b"
 
 DATABASE_PATH = "database/medicine_db.json"
 
-
-# ============================================
-# HIGH-RISK SYMPTOMS
-# ============================================
 
 HIGH_RISK_SIDE_EFFECTS = [
     "breathing difficulty",
@@ -168,10 +155,6 @@ HIGH_RISK_SIDE_EFFECTS = [
 ]
 
 
-# ============================================
-# LOAD MEDICINE DATABASE
-# ============================================
-
 def load_database():
 
     try:
@@ -180,36 +163,21 @@ def load_database():
             DATABASE_PATH,
             "r",
             encoding="utf-8"
-        ) as f:
+        ) as file:
 
-            data = json.load(f)
+            data = json.load(file)
 
-        # Supports both formats:
-        #
-        # {
-        #     "medicines": {
-        #         "paracetamol": {...}
-        #     }
-        # }
-        #
-        # AND:
-        #
-        # {
-        #     "paracetamol": {...}
-        # }
-
-        return data.get("medicines", data)
+        return data.get(
+            "medicines",
+            data
+        )
 
     except Exception as e:
 
-        print(f"Database error: {e}")
+        print("Database error:", e)
 
         return {}
 
-
-# ============================================
-# NORMALIZE TEXT
-# ============================================
 
 def normalize_text(text):
 
@@ -236,10 +204,6 @@ def normalize_text(text):
     return text
 
 
-# ============================================
-# SIDE-EFFECT MATCHING
-# ============================================
-
 def effect_matches(
     reported_effect,
     known_effect
@@ -256,82 +220,39 @@ def effect_matches(
     if not reported or not known:
         return False
 
-    # ----------------------------------------
-    # Direct phrase match
-    # ----------------------------------------
-
     if known in reported:
         return True
 
-    # ----------------------------------------
-    # Word match
-    # ----------------------------------------
-
-    known_words = set(
-        known.split()
-    )
-
-    reported_words = set(
-        reported.split()
-    )
-
-    if (
-        known_words
-        and known_words.issubset(reported_words)
-    ):
-        return True
-
-    # ----------------------------------------
-    # Common variations
-    # ----------------------------------------
-
-    variations = {
-
-        "nausea": [
-            "nauseous"
-        ],
-
-        "vomiting": [
-            "vomit"
-        ],
-
-        "dizziness": [
-            "dizzy"
-        ],
-
-        "headache": [
-            "headaches"
-        ],
-
-        "diarrhea": [
-            "diarrhoea"
-        ],
-
-        "rash": [
-            "rashes"
-        ],
-
-        "swelling": [
-            "swollen"
-        ]
-    }
+    known_words = known.split()
+    reported_words = reported.split()
 
     for word in known_words:
 
-        if word in variations:
+        if word in reported_words:
+            continue
 
-            for variation in variations[word]:
+        if word == "nausea" and "nauseous" in reported_words:
+            continue
 
-                if variation in reported_words:
+        if word == "vomiting" and "vomit" in reported_words:
+            continue
 
-                    return True
+        if word == "dizziness" and "dizzy" in reported_words:
+            continue
 
-    return False
+        if word == "headache" and "headaches" in reported_words:
+            continue
 
+        if word == "rash" and "rashes" in reported_words:
+            continue
 
-# ============================================
-# CALCULATE SIDE-EFFECT RISK
-# ============================================
+        if word == "swelling" and "swollen" in reported_words:
+            continue
+
+        return False
+
+    return True
+
 
 def calculate_side_effect_risk(
     age,
@@ -341,61 +262,46 @@ def calculate_side_effect_risk(
 
     data = load_database()
 
+    score = 0
+
     reported_effect = normalize_text(
         reported_effect
     )
 
-    score = 0
-
-    matched_effects = []
-    matched_medicines = []
-    matched_high_risk = []
-
-    # ========================================
-    # VALIDATE MEDICINES
-    # ========================================
-
     if not medicines:
-
         return 0
 
-    # ========================================
-    # CHECK MEDICINE SIDE EFFECTS
-    # ========================================
+    matched_effects = []
 
-    for med in medicines:
+    for medicine in medicines:
 
-        med_key = normalize_text(
-            med
+        medicine_name = normalize_text(
+            medicine
         )
 
         medicine_info = data.get(
-            med_key
+            medicine_name
         )
 
-        # Case-insensitive lookup
         if medicine_info is None:
 
-            for db_med, info in data.items():
+            for db_name in data:
 
                 if normalize_text(
-                    db_med
-                ) == med_key:
+                    db_name
+                ) == medicine_name:
 
-                    medicine_info = info
+                    medicine_info = data[db_name]
 
                     break
 
         if not medicine_info:
-
             continue
 
         known_effects = medicine_info.get(
             "common_side_effects",
             []
         )
-
-        medicine_matched = False
 
         for effect in known_effects:
 
@@ -404,41 +310,26 @@ def calculate_side_effect_risk(
                 effect
             ):
 
-                matched_effects.append(
-                    effect
-                )
+                if effect not in matched_effects:
 
-                medicine_matched = True
+                    matched_effects.append(
+                        effect
+                    )
 
-        if medicine_matched:
-
-            matched_medicines.append(
-                med
-            )
-
-    # ========================================
-    # SCORE KNOWN SIDE EFFECTS
-    # ========================================
-
-    if matched_effects:
+    # Known medicine side effect
+    if len(matched_effects) > 0:
 
         score += min(
             len(matched_effects) * 25,
             50
         )
 
-    # ========================================
-    # AGE RISK
-    # ========================================
-
+    # Age factor
     try:
 
         age = int(age)
 
-    except (
-        ValueError,
-        TypeError
-    ):
+    except (ValueError, TypeError):
 
         age = 0
 
@@ -450,10 +341,7 @@ def calculate_side_effect_risk(
 
         score += 10
 
-    # ========================================
-    # HIGH-RISK SYMPTOMS
-    # ========================================
-
+    # High-risk symptoms
     for keyword in HIGH_RISK_SIDE_EFFECTS:
 
         if effect_matches(
@@ -461,37 +349,18 @@ def calculate_side_effect_risk(
             keyword
         ):
 
-            matched_high_risk.append(
-                keyword
-            )
+            score += 50
 
-    if matched_high_risk:
-
-        score += 50
-
-    # ========================================
-    # MULTIPLE MEDICINES
-    # ========================================
-
+    # Multiple medicines
     if len(medicines) >= 3:
 
         score += 10
 
-    # ========================================
-    # MAXIMUM SCORE
-    # ========================================
-
-    score = min(
+    return min(
         score,
         100
     )
 
-    return score
-
-
-# ============================================
-# RISK LEVEL
-# ============================================
 
 def side_effect_risk_level(score):
 
@@ -512,55 +381,48 @@ def side_effect_risk_level(score):
         return "LOW"
 
 
-# ============================================
-# AI GUIDANCE
-# ============================================
-
 def generate_side_effect_guidance(
     age,
     medicines,
     reported_effect
 ):
 
-    medicine_text = (
-        ", ".join(medicines)
-        if medicines
-        else "Not identified"
+    medicine_text = ", ".join(
+        medicines
     )
 
     prompt = f"""
-You are an educational medicine-safety assistant.
+You are an educational medicine safety assistant.
 
-User age:
+Age:
 {age}
 
-Medicines taken:
+Medicines:
 {medicine_text}
 
 Reported experience:
 {reported_effect}
 
-Provide a concise educational response containing:
+Explain:
 
 1. Possible general explanation
-2. Whether the experience may be related to a medicine
-3. One precaution to watch for
+2. Whether the symptom may be related to a medicine
+3. One precaution
 4. When to contact a doctor
 5. Emergency warning signs if relevant
 
-Important rules:
-
-- Do NOT diagnose.
-- Do NOT prescribe medication.
-- Do NOT tell the user to start, stop,
-  or change a medicine.
-- Do NOT claim that the medicine definitely
+Important:
+- Do not diagnose.
+- Do not prescribe medication.
+- Do not tell the user to start, stop,
+  or change medication.
+- Do not claim the medicine definitely
   caused the symptom.
-- Explain that symptoms can have other causes.
-- If severe symptoms such as breathing difficulty,
-  facial swelling, seizure, unconsciousness,
-  severe rash, or chest pain are reported,
-  recommend urgent/emergency medical evaluation.
+- Explain that symptoms may have other causes.
+- If breathing difficulty, facial swelling,
+  seizure, unconsciousness, severe rash,
+  or chest pain is present, recommend
+  urgent medical evaluation.
 
 End with:
 
@@ -570,28 +432,20 @@ End with:
     try:
 
         response = client.chat.completions.create(
-
             model=MODEL_NAME,
-
             messages=[
-
                 {
                     "role": "system",
                     "content": (
                         "You are an educational "
-                        "medical safety assistant. "
-                        "Provide cautious, "
-                        "non-diagnostic information."
+                        "medical safety assistant."
                     )
                 },
-
                 {
                     "role": "user",
                     "content": prompt
                 }
-
             ],
-
             temperature=0.3
         )
 
@@ -599,5 +453,4 @@ End with:
 
     except Exception as e:
 
-        return f"AI error: {str(e)}"
-
+        return "AI error: " + str(e)
