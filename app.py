@@ -643,42 +643,255 @@ with tabs[2]:
 # ==============================
 # TAB 4 - Side Effect Monitor
 # ==============================
+# with tabs[3]:
+#     st.header("⚠ Experience & Side-Effect Monitor")
+
+#     age = st.number_input("Enter your age", min_value=0, max_value=120)
+#     gender = st.selectbox("Select gender", ["Male","Female","Other"])
+
+#     medicine_input = st.text_input("Enter medicine(s) taken (comma-separated)")
+#     reported_effect = st.text_area("Describe your experience after taking medicine")
+
+#     if st.button("Analyze Side Effect"):
+
+#         if medicine_input.strip() == "" or reported_effect.strip() == "":
+#             st.warning("Please enter medicine and experience details.")
+#         else:
+#             medicines = identify_medicines(medicine_input)
+
+#             score = calculate_side_effect_risk(age, medicines, reported_effect)
+#             level = side_effect_risk_level(score)
+
+#             st.metric("Side-Effect Risk Score (%)", f"{score}%")
+#             st.progress(score)
+
+#             if level == "CRITICAL":
+#                 st.error("🚨 Critical risk — Seek medical attention immediately.")
+#             elif level == "HIGH":
+#                 st.error("⚠ High risk — Consult a doctor soon.")
+#             elif level == "MODERATE":
+#                 st.warning("⚠ Moderate risk — Monitor symptoms.")
+#             else:
+#                 st.success("Low immediate risk based on current information.")
+
+#             st.divider()
+#             st.info("Generating AI Educational Guidance...")
+
+#             guidance = generate_side_effect_guidance(age, medicines, reported_effect)
+#             st.write(guidance)
+
+
+# ==============================
+# TAB 4 - Side Effect Monitor
+# ==============================
+
 with tabs[3]:
+
     st.header("⚠ Experience & Side-Effect Monitor")
 
-    age = st.number_input("Enter your age", min_value=0, max_value=120)
-    gender = st.selectbox("Select gender", ["Male","Female","Other"])
+    st.write(
+        "Enter the medicine and symptoms you experienced "
+        "after taking it. MedSafe AI will calculate a "
+        "rule-based safety risk indicator."
+    )
 
-    medicine_input = st.text_input("Enter medicine(s) taken (comma-separated)")
-    reported_effect = st.text_area("Describe your experience after taking medicine")
+    # --------------------------------
+    # USER AGE
+    # --------------------------------
 
-    if st.button("Analyze Side Effect"):
+    age = st.number_input(
+        "Enter your age",
+        min_value=0,
+        max_value=120,
+        value=18,
+        step=1
+    )
 
-        if medicine_input.strip() == "" or reported_effect.strip() == "":
-            st.warning("Please enter medicine and experience details.")
+    # --------------------------------
+    # GENDER
+    # --------------------------------
+
+    gender = st.selectbox(
+        "Select gender",
+        [
+            "Male",
+            "Female",
+            "Other"
+        ]
+    )
+
+    # --------------------------------
+    # MEDICINES
+    # --------------------------------
+
+    medicine_input = st.text_input(
+        "Enter medicine(s) taken",
+        placeholder="Example: paracetamol, ibuprofen"
+    )
+
+    # --------------------------------
+    # REPORTED EFFECT
+    # --------------------------------
+
+    reported_effect = st.text_area(
+        "Describe your experience after taking medicine",
+        placeholder=(
+            "Example: I am feeling nausea and dizziness "
+            "after taking the medicine."
+        ),
+        height=120
+    )
+
+    # --------------------------------
+    # ANALYZE BUTTON
+    # --------------------------------
+
+    if st.button(
+        "🔍 Analyze Side Effect",
+        key="side_effect_button"
+    ):
+
+        # ==============================
+        # VALIDATION
+        # ==============================
+
+        if not medicine_input.strip():
+
+            st.warning(
+                "⚠ Please enter at least one medicine."
+            )
+
+        elif not reported_effect.strip():
+
+            st.warning(
+                "⚠ Please describe your experience."
+            )
+
         else:
-            medicines = identify_medicines(medicine_input)
 
-            score = calculate_side_effect_risk(age, medicines, reported_effect)
-            level = side_effect_risk_level(score)
+            # ==============================
+            # IDENTIFY MEDICINES
+            # ==============================
 
-            st.metric("Side-Effect Risk Score (%)", f"{score}%")
-            st.progress(score)
+            medicines = identify_medicines(
+                medicine_input
+            )
 
-            if level == "CRITICAL":
-                st.error("🚨 Critical risk — Seek medical attention immediately.")
-            elif level == "HIGH":
-                st.error("⚠ High risk — Consult a doctor soon.")
-            elif level == "MODERATE":
-                st.warning("⚠ Moderate risk — Monitor symptoms.")
+            if not medicines:
+
+                st.warning(
+                    "⚠ No valid medicines were detected."
+                )
+
             else:
-                st.success("Low immediate risk based on current information.")
 
-            st.divider()
-            st.info("Generating AI Educational Guidance...")
+                st.success(
+                    "💊 Detected Medicines: "
+                    + ", ".join(medicines)
+                )
 
-            guidance = generate_side_effect_guidance(age, medicines, reported_effect)
-            st.write(guidance)
+                # ==============================
+                # CALCULATE RISK
+                # ==============================
+
+                score = calculate_side_effect_risk(
+                    age,
+                    medicines,
+                    reported_effect
+                )
+
+                level = side_effect_risk_level(
+                    score
+                )
+
+                # ==============================
+                # DISPLAY SCORE
+                # ==============================
+
+                st.subheader(
+                    "📊 Side-Effect Risk Assessment"
+                )
+
+                st.metric(
+                    "Safety Risk Score",
+                    f"{score}%"
+                )
+
+                st.progress(
+                    score / 100
+                )
+
+                # ==============================
+                # RISK LEVEL
+                # ==============================
+
+                if level == "CRITICAL":
+
+                    st.error(
+                        "🚨 CRITICAL RISK — "
+                        "Seek emergency medical attention."
+                    )
+
+                elif level == "HIGH":
+
+                    st.error(
+                        "⚠ HIGH RISK — "
+                        "Prompt medical evaluation is recommended."
+                    )
+
+                elif level == "MODERATE":
+
+                    st.warning(
+                        "⚠ MODERATE RISK — "
+                        "Monitor the symptoms and consider contacting "
+                        "a healthcare professional."
+                    )
+
+                else:
+
+                    st.success(
+                        "✅ LOW IMMEDIATE RISK — "
+                        "No high-risk indicator was detected "
+                        "from the information provided."
+                    )
+
+                # ==============================
+                # AI GUIDANCE
+                # ==============================
+
+                st.divider()
+
+                st.subheader(
+                    "🤖 AI Educational Guidance"
+                )
+
+                with st.spinner(
+                    "Generating educational guidance..."
+                ):
+
+                    guidance = generate_side_effect_guidance(
+                        age,
+                        medicines,
+                        reported_effect
+                    )
+
+                st.write(guidance)
+
+                # ==============================
+                # DISCLAIMER
+                # ==============================
+
+                st.caption(
+                    "⚕️ This tool provides an educational "
+                    "risk indicator and is not a medical diagnosis. "
+                    "Seek professional medical advice for concerning "
+                    "or worsening symptoms."
+                )
+
+
+
+
+
 
 # ==============================
 # TAB 5 - Emergency Predictor
